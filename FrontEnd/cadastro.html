@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criar Conta - Finanças Pessoais</title>
+    <link rel="stylesheet" href="cadastro.css">
+</head>
+<body>
+
+    <button class="theme-toggle" id="theme-toggle">🌙</button>
+
+    <main class="signup-wrapper">
+        <div class="signup-container">
+            <header class="signup-header">
+                <h1>Criar sua Conta</h1>
+                <p>Preencha os dados abaixo para começar a organizar suas finanças.</p>
+            </header>
+
+            <form action="#" class="signup-form">
+                <div class="input-group">
+                    <label for="nome">Nome Completo</label>
+                    <input type="text" id="nome" placeholder="Digite seu nome completo" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="email">E-mail</label>
+                    <input type="email" id="email" placeholder="seu@email.com" required>
+                </div>
+
+                <div class="input-group">
+                    <label>Data de Nascimento</label>
+                    <div class="date-row">
+                        <select id="dia" required>
+                            <option value="">Dia</option>
+                            <!-- Dias 1-31 -->
+                            <script>
+                                for (let i = 1; i <= 31; i++) {
+                                    document.write(`<option value="${i}">${i}</option>`);
+                                }
+                            </script>
+                        </select>
+                        <select id="mes" required>
+                            <option value="">Mês</option>
+                            <option value="01">Jan</option>
+                            <option value="02">Fev</option>
+                            <option value="03">Mar</option>
+                            <option value="04">Abr</option>
+                            <option value="05">Mai</option>
+                            <option value="06">Jun</option>
+                            <option value="07">Jul</option>
+                            <option value="08">Ago</option>
+                            <option value="09">Set</option>
+                            <option value="10">Out</option>
+                            <option value="11">Nov</option>
+                            <option value="12">Dez</option>
+                        </select>
+                        <select id="ano" required>
+                            <option value="">Ano</option>
+                            <!-- Anos de 1900 até o ano atual -->
+                            <script>
+                                const currentYear = new Date().getFullYear();
+                                for (let i = currentYear; i >= 1950; i--) {
+                                    document.write(`<option value="${i}">${i}</option>`);
+                                }
+                            </script>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="celular">Celular</label>
+                    <div class="phone-row">
+                        <select id="pais" required>
+                            <option value="">País</option>
+                            <option value="BR">Brasil (+55)</option>
+                            <option value="US">Estados Unidos (+1)</option>
+                            <option value="PT">Portugal (+351)</option>
+                            <option value="AR">Argentina (+54)</option>
+                            <option value="MX">México (+52)</option>
+                            <!-- Adicione mais países conforme necessário -->
+                        </select>
+                        <input type="tel" id="celular" placeholder="Número" required>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="password">Crie uma Senha</label>
+                    <input type="password" id="password" placeholder="Mínimo 6 caracteres" required>
+                </div>
+
+                <button type="submit" class="btn-signup">Finalizar Cadastro</button>
+            </form>
+
+            <footer class="signup-footer">
+                <p>Já tem uma conta? <a href="login.html">Faça login aqui</a></p>
+            </footer>
+        </div>
+    </main>
+
+    <script>
+        const themeToggle = document.getElementById('theme-toggle');
+        const body = document.body;
+
+        // Check for saved theme preference or default to dark mode
+        const currentTheme = localStorage.getItem('theme') || 'dark';
+        if (currentTheme === 'light') {
+            body.classList.add('light-mode');
+            themeToggle.textContent = '☀️';
+        } else {
+            themeToggle.textContent = '🌙';
+        }
+
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('light-mode');
+            const isLight = body.classList.contains('light-mode');
+            themeToggle.textContent = isLight ? '☀️' : '🌙';
+            localStorage.setItem('theme', isLight ? 'light' : 'dark');
+        });
+
+        // Phone formatting
+        const paisSelect = document.getElementById('pais');
+        const celularInput = document.getElementById('celular');
+
+        const phoneFormats = {
+            BR: { mask: '(xx) xxxxx-xxxx', placeholder: '(11) 99999-9999' },
+            US: { mask: '(xxx) xxx-xxxx', placeholder: '(123) 456-7890' },
+            PT: { mask: 'xxx xxx xxx', placeholder: '912 345 678' },
+            AR: { mask: 'xx xxxx-xxxx', placeholder: '11 1234-5678' },
+            MX: { mask: 'xx xxxx xxxx', placeholder: '55 1234 5678' }
+        };
+
+        function formatPhone(value, mask) {
+            let result = '';
+            let valueIndex = 0;
+            for (let i = 0; i < mask.length; i++) {
+                if (mask[i] === 'x') {
+                    if (valueIndex < value.length) {
+                        result += value[valueIndex];
+                        valueIndex++;
+                    }
+                } else {
+                    result += mask[i];
+                }
+            }
+            return result;
+        }
+
+        paisSelect.addEventListener('change', () => {
+            const country = paisSelect.value;
+            if (phoneFormats[country]) {
+                celularInput.placeholder = phoneFormats[country].placeholder;
+                celularInput.value = '';
+            }
+        });
+
+        celularInput.addEventListener('input', (e) => {
+            const country = paisSelect.value;
+            if (phoneFormats[country]) {
+                const mask = phoneFormats[country].mask;
+                const rawValue = e.target.value.replace(/\D/g, '');
+                e.target.value = formatPhone(rawValue, mask);
+            }
+        });
+    </script>
+
+</body>
+</html>

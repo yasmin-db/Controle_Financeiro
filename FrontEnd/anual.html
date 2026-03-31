@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anual - Finanças Pessoais</title>
+    <link rel="stylesheet" href="dashboard_geral.css">
+    <link rel="stylesheet" href="anual.css">
+</head>
+<body>
+
+    <div class="grid-container">
+        <aside class="sidebar">
+            <div class="logo">💎</div>
+            <nav class="menu">
+                <a href="dashboard_inicio.html">🏠 Início</a>
+                <a href="mensal.html">📅 Mensal</a>
+                <a href="anual.html" class="active">📈 Anual</a>
+                <a href="ajustes.html">⚙️ Ajustes</a>
+            </nav>
+        </aside>
+
+        <header class="topbar">
+            <div class="page-title">
+                <h1>Performance Anual</h1>
+                <span>Consolidado 2026</span>
+            </div>
+        </header>
+
+        <main class="content">
+            <section class="cards-row">
+                
+                <div class="card shadow-green">
+                    <div class="card-header">
+                        <span class="card-icon">💰</span>
+                        <h3>TOTAL GANHO NO ANO</h3>
+                    </div>
+                    <div class="card-body">
+                        <h2 class="main-value">R$ 120.840,00</h2>
+                    </div>
+                </div>
+
+                <div class="card shadow-red">
+                    <div class="card-header">
+                        <span class="card-icon">📉</span>
+                        <h3>TOTAL GASTO NO ANO</h3>
+                    </div>
+                    <div class="card-body">
+                        <h2 class="main-value text-red">R$ 103.827,24</h2>
+                    </div>
+                </div>
+
+                <div class="card shadow-blue">
+                    <div class="card-header">
+                        <span class="card-icon">📈</span>
+                        <h3>PATRIMÔNIO ACUMULADO</h3>
+                    </div>
+                    <div class="card-body">
+                        <h2 class="main-value text-green">R$ 17.012,76</h2>
+                    </div>
+                </div>
+
+            </section>
+
+            <section class="section-box">
+                <h3>Fluxo de Caixa Mensal (Entradas vs Saídas)</h3>
+                <div class="chart-container-large">
+                    <canvas id="chartBarrasAnual"></canvas>
+                </div>
+            </section>
+
+            <section class="section-box">
+                <h3>Evolução de Gastos por Categoria</h3>
+                <div class="chart-container-large">
+                    <canvas id="chartLinhasCategorias"></canvas>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // --- GRÁFICO DE BARRAS DUPLAS ---
+        const ctxBarras = document.getElementById('chartBarrasAnual').getContext('2d');
+        new Chart(ctxBarras, {
+            type: 'bar',
+            data: {
+                labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+                datasets: [
+                    {
+                        label: 'Entradas',
+                        data: [10000, 10500, 9800, 11000, 10200, 10000, 10000, 10000, 10000, 10000, 10000, 10840],
+                        backgroundColor: '#3fb950',
+                        borderRadius: 4
+                    },
+                    {
+                        label: 'Saídas',
+                        data: [8500, 9000, 8200, 9500, 8800, 8000, 8100, 8300, 8500, 9000, 8700, 9227],
+                        backgroundColor: '#f85149',
+                        borderRadius: 4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { grid: { color: '#30363d' }, ticks: { color: '#8b949e' } },
+                    x: { grid: { display: false }, ticks: { color: '#8b949e' } }
+                },
+                plugins: { legend: { labels: { color: '#8b949e' } } }
+            }
+        });
+
+        // --- GRÁFICO DE LINHAS (CATEGORIAS) ---
+        const ctxLinhas = document.getElementById('chartLinhasCategorias').getContext('2d');
+        new Chart(ctxLinhas, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+                datasets: [
+                    { label: 'Moradia', data: [1200, 1200, 1200, 1300, 1200, 1200, 1200, 1200, 1200, 1200, 1200, 1200], borderColor: '#2ea043', tension: 0.3 },
+                    { label: 'Alimentação', data: [900, 1100, 950, 1200, 850, 933, 1000, 900, 1050, 1100, 950, 980], borderColor: '#58a6ff', tension: 0.3 },
+                    { label: 'Transporte', data: [500, 650, 400, 800, 550, 620, 700, 500, 600, 750, 550, 600], borderColor: '#f85149', tension: 0.3 },
+                    { label: 'Lazer', data: [300, 800, 200, 500, 900, 250, 400, 150, 600, 300, 450, 700], borderColor: '#ffbd2e', tension: 0.3 }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { grid: { color: '#30363d' }, ticks: { color: '#8b949e' } },
+                    x: { grid: { color: '#30363d' }, ticks: { color: '#8b949e' } }
+                },
+                plugins: { legend: { position: 'bottom', labels: { color: '#8b949e', padding: 20 } } }
+            }
+        });
+    </script>
+</body>
+</html>

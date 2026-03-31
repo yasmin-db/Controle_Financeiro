@@ -1,0 +1,42 @@
+/* Container dos gráficos grandes */
+.chart-container-large {
+    height: 400px; /* Altura maior para melhor leitura anual */
+    width: 100%;
+    margin-top: 20px;
+}
+
+/* Cards com espaçamento */
+.cards-row {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.card {
+    flex: 1;
+    min-width: 200px;
+}
+
+/* Cores específicas para os cards do topo */
+.text-red { color: #f85149; }
+.text-green { color: #3fb950; }
+
+/* Ajustes de sombras para os cards conforme solicitado */
+.shadow-blue { border-left: 4px solid #58a6ff; }
+.shadow-red { border-left: 4px solid #f85149; }
+.shadow-green { border-left: 4px solid #3fb950; }
+
+/* Títulos das seções */
+h3 {
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin-bottom: 10px;
+}
+
+/* Seção de gráficos */
+.section-box {
+    margin-bottom: 30px;
+    padding: 25px;
+}

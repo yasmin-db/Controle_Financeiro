@@ -1,0 +1,161 @@
+/* Reset de Estilos */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* Variáveis de Tema - Dark Mode */
+:root {
+    --bg-color: #0d1117;
+    --text-color: #ffffff;
+    --container-bg: #161b22;
+    --border-color: #30363d;
+    --header-color: #58a6ff;
+    --secondary-text: #8b949e;
+    --input-bg: #0d1117;
+    --input-text: #ffffff;
+    --input-focus-border: #58a6ff;
+    --btn-bg: #238636;
+    --btn-hover: #2ea043;
+    --link-color: #58a6ff;
+}
+
+/* Light Mode Overrides */
+body.light-mode {
+    --bg-color: #ffffff;
+    --text-color: #000000;
+    --container-bg: #f6f8fa;
+    --border-color: #d1d9e0;
+    --header-color: #0969da;
+    --secondary-text: #656d76;
+    --input-bg: #ffffff;
+    --input-text: #000000;
+    --input-focus-border: #0969da;
+    --btn-bg: #1f883d;
+    --btn-hover: #1a7f37;
+    --link-color: #0969da;
+}
+
+/* Corpo da Página */
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* Container Principal */
+.login-container {
+    background-color: var(--container-bg);
+    padding: 2.5rem;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+/* Cabeçalho do Login */
+.login-header h1 {
+    font-size: 1.5rem;
+    color: var(--header-color);
+    margin-bottom: 0.5rem;
+    text-align: center;
+}
+
+.login-header p {
+    color: var(--secondary-text);
+    font-size: 0.9rem;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+/* Grupos de Input */
+.input-group {
+    margin-bottom: 1.2rem;
+}
+
+.input-group label {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--text-color);
+    margin-bottom: 0.5rem;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 0.8rem;
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    color: var(--input-text);
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.input-group input:focus {
+    border-color: var(--input-focus-border);
+    box-shadow: 0 0 0 2px rgba(88, 166, 255, 0.1);
+}
+
+/* Botão Principal */
+.btn-login {
+    width: 100%;
+    padding: 0.8rem;
+    background-color: var(--btn-bg);
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    margin-top: 0.5rem;
+}
+
+.btn-login:hover {
+    background-color: var(--btn-hover);
+}
+
+/* Rodapé do Login */
+.login-footer {
+    margin-top: 1.5rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.link-secondary {
+    color: var(--link-color);
+    text-decoration: none;
+    font-size: 0.8rem;
+}
+
+.link-secondary:hover {
+    text-decoration: underline;
+}
+
+/* Botão de Toggle Dark/Light Mode */
+.theme-toggle {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--text-color);
+    transition: color 0.3s;
+}
+
+.theme-toggle:hover {
+    color: var(--header-color);
+}

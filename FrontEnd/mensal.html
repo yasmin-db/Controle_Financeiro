@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mensal - Finanças Pessoais</title>
+    <link rel="stylesheet" href="dashboard_geral.css">
+    <link rel="stylesheet" href="mensal.css"> </head>
+<body>
+
+    <div class="grid-container">
+        <aside class="sidebar">
+            <div class="logo">💎</div>
+            <nav class="menu">
+                <a href="dashboard_inicio.html">🏠 Início</a>
+                <a href="mensal.html" class="active">📅 Mensal</a>
+                <a href="anual.html">📈 Anual</a>
+                <a href="ajustes.html">⚙️ Ajustes</a>
+            </nav>
+        </aside>
+
+        <header class="topbar">
+            <div class="page-title">
+                <h1>Detalhamento Mensal</h1>
+                <span>Janeiro de 2026</span>
+            </div>
+        </header>
+
+        <main class="content">
+            <section class="info-row">
+                <div class="mini-card shadow-blue">
+                    <small>Saldo Mês Anterior</small>
+                    <p>R$ 1.250,00</p>
+                </div>
+                <div class="mini-card shadow-purple">
+                    <small>Fatura Cartão de Crédito</small>
+                    <p id="card-invoice-value">R$ 0,00</p>
+                </div>
+            </section>
+
+            <section class="section-box">
+                <h3>Gastos por Categoria</h3>
+                <div class="chart-container-bar">
+                    <canvas id="graficoBarrasMensal"></canvas>
+                </div>
+            </section>
+
+            <section class="transactions-grid">
+                <div class="transaction-box">
+                    <div class="box-header-row">
+                        <h3>Central de Lançamentos</h3>
+                        
+                        <div class="filter-controls">
+                            <div class="select-group">
+                                <label for="filter-type">Tipo:</label>
+                                <select id="filter-type" class="custom-select">
+                                    <option value="todos">Todas</option>
+                                    <option value="entrada">Entradas</option>
+                                    <option value="saida">Saída</option>
+                                </select>
+                            </div>
+
+                            <span class="divider">|</span>
+
+                            <div class="select-group">
+                                <label for="filter-category">Categoria:</label>
+                                <select id="filter-category" class="custom-select">
+                                    <option value="todas">Todas as categorias</option>
+                                    <option value="Alimentação">Alimentação</option>
+                                    <option value="Moradia">Moradia</option>
+                                    <option value="Transporte">Transporte</option>
+                                    <option value="Lazer">Lazer</option>
+                                    <option value="Saúde">Saúde</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                        <div class="scroll-area" id="lista-transacoes">
+                        <!-- Transações serão carregadas dinamicamente -->
+                    </div>
+                    <div class="balance-summary" id="balance-summary">Balanço: R$ 0.00</div>
+                </div>
+
+                <div class="transaction-box">
+                    <h3>Lançamentos Cartão</h3>
+                    <div class="scroll-area" id="cartao-transacoes">
+                        <!-- Transações de cartão serão carregadas dinamicamente -->
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="mensal.js"></script>
+
+    
+</body>
+</html>

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finanças Pessoais - Dashboard Mensal</title>
+    <link rel="stylesheet" href="dashboard_geral.css">
+</head>
+<body>
+
+    <div class="grid-container">
+        
+        <aside class="sidebar">
+            <div class="logo">💎</div>
+            <nav class="menu">
+                <a href="dashboard_inicio.html" class="active">🏠 Início</a>
+                <a href="mensal.html">📅 Mensal</a>
+                <a href="anual.html">📈 Anual</a>
+                <a href="ajustes.html">⚙️ Ajustes</a>
+            </nav>
+        </aside>
+
+        <header class="topbar">
+            <div class="page-title">
+                <h1>Finanças Pessoais</h1>
+                <span>Visão Geral • Gabriel e Marianna</span>
+            </div>
+            <div class="user-info">
+                <div class="date-picker">📅 Janeiro de 2026</div>
+                <div class="status-badge">● Sincronizado</div>
+            </div>
+        </header>
+
+        <main class="content">
+            
+            <section class="cards-row">
+                
+                <div class="card shadow-green">
+                    <div class="card-header">
+                        <span class="card-icon">💰</span>
+                        <h3>RENDA TOTAL</h3>
+                    </div>
+                    <div class="card-body">
+                        <h2 class="main-value">R$ 10.070,00</h2>
+                    </div>
+                    <div class="card-footer">
+                        <p>Gabriel: <span>R$ 5.315,00</span></p>
+                        <p>Marianna: <span>R$ 4.755,00</span></p>
+                    </div>
+                </div>
+
+                <div class="card shadow-red">
+                    <div class="card-header">
+                        <span class="card-icon">📉</span>
+                        <h3>CUSTOS TOTAIS</h3>
+                    </div>
+                    <div class="card-body">
+                        <h2 class="main-value text-red">R$ 8.652,27</h2>
+                        <small>↓ R$ 783,72 vs mês anterior</small>
+                    </div>
+                    <div class="card-footer">
+                        <p>Alimentação: <span>R$ 933,50</span></p>
+                        <p>Outros: <span>R$ 7.718,77</span></p>
+                    </div>
+                </div>
+
+                <div class="card shadow-blue">
+                    <div class="card-header">
+                        <span class="card-icon">📈</span>
+                        <h3>SOBRA DO MÊS</h3>
+                    </div>
+                    <div class="card-body">
+                        <h2 class="main-value">R$ 1.417,73</h2>
+                        <div class="progress-container">
+                            <div class="progress-bar" style="width: 71%;"></div>
+                        </div>
+                        <small>Progresso da Meta: 71%</small>
+                    </div>
+                </div>
+
+                <div class="card shadow-purple">
+                    <div class="card-header">
+                        <span class="card-icon">👥</span>
+                        <h3>DIVISÃO</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="split-info">
+                            <p>Gabriel Sobra: <strong>R$ 646,33</strong></p>
+                            <p>Marianna Sobra: <strong>R$ 771,40</strong></p>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+            <section class="charts-row">
+                <div class="chart-card">
+                    <h3>Distribuição de Gastos Reais</h3>
+                    <div class="chart-container">
+                        <canvas id="meuGraficoPizza"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <h3>Últimos Lançamentos</h3>
+                    <div class="transactions-list">
+                        
+                        <div class="transaction-item">
+                            <div class="trans-info">
+                                <span class="trans-icon icon-down">⬇</span>
+                                <div>
+                                    <p class="trans-name">Supermercado BH</p>
+                                    <small class="trans-category">Alimentação</small>
+                                </div>
+                            </div>
+                            <span class="trans-value text-red">- R$ 250,00</span>
+                        </div>
+
+                        <div class="transaction-item">
+                            <div class="trans-info">
+                                <span class="trans-icon icon-up">⬆</span>
+                                <div>
+                                    <p class="trans-name">Salário Empresa</p>
+                                    <small class="trans-category">Renda</small>
+                                </div>
+                            </div>
+                            <span class="trans-value text-green">+ R$ 5.315,00</span>
+                        </div>
+
+                        <div class="transaction-item">
+                            <div class="trans-info">
+                                <span class="trans-icon icon-down">⬇</span>
+                                <div>
+                                    <p class="trans-name">Posto Ipiranga</p>
+                                    <small class="trans-category">Combustível</small>
+                                </div>
+                            </div>
+                            <span class="trans-value text-red">- R$ 180,00</span>
+                        </div>
+
+                        <div class="transaction-item">
+                            <div class="trans-info">
+                                <span class="trans-icon icon-down">⬇</span>
+                                <div>
+                                    <p class="trans-name">Netflix</p>
+                                    <small class="trans-category">Lazer</small>
+                                </div>
+                            </div>
+                            <span class="trans-value text-red">- R$ 55,90</span>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <section class="add-transaction-section">
+                <div class="chart-card">
+                    <h3>Adicionar Lançamento Manual</h3>
+                    <form id="add-transaction-form" class="add-transaction-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="trans-name">Nome do Lançamento</label>
+                                <input type="text" id="trans-name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="trans-category">Categoria</label>
+                                <select id="trans-category" required>
+                                    <option value="">Selecione</option>
+                                    <!-- options will be populated by JS -->
+                                </select>
+                                <input type="text" id="new-category" placeholder="Digite nova categoria" style="display: none;">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="trans-value">Valor (R$)</label>
+                                <input type="number" id="trans-value" step="0.01" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="trans-date">Data</label>
+                                <input type="date" id="trans-date" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="trans-payment">Tipo de Pagamento</label>
+                                <select id="trans-payment" required>
+                                    <option value="">Selecione</option>
+                                    <option value="Cartão de Crédito">Cartão de Crédito</option>
+                                    <option value="Débito">Débito</option>
+                                    <option value="PIX">PIX</option>
+                                    <option value="Dinheiro">Dinheiro</option>
+                                    <option value="Transferência">Transferência</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Tipo</label>
+                                <div class="radio-group">
+                                    <label><input type="radio" name="trans-type" value="entrada" required> Entrada</label>
+                                    <label><input type="radio" name="trans-type" value="saida" checked> Saída</label>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-add">Adicionar Lançamento</button>
+                    </form>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="dashboard.js"></script>
+</body>
+</html>
