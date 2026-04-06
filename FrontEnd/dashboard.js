@@ -149,11 +149,120 @@ function getColorForCategory(category, index) {
     return palette[index % palette.length];
 }
 
+function getDashboardReferencePeriod() {
+    const monthMap = {
+        janeiro: 0,
+        fevereiro: 1,
+        marco: 2,
+        março: 2,
+        abril: 3,
+        maio: 4,
+        junho: 5,
+        julho: 6,
+        agosto: 7,
+        setembro: 8,
+        outubro: 9,
+        novembro: 10,
+        dezembro: 11
+    };
+
+    const datePicker = document.querySelector('.date-picker');
+    if (datePicker) {
+        const normalized = datePicker.textContent
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .toLowerCase();
+
+        const match = normalized.match(/(janeiro|fevereiro|marco|abril|maio|junho|julho|agosto|setembro|outubro|novembro|dezembro)\s+de\s+(\d{4})/);
+        if (match) {
+            return {
+                month: monthMap[match[1]],
+                year: parseInt(match[2], 10)
+            };
+        }
+    }
+
+    const now = new Date();
+    return { month: now.getMonth(), year: now.getFullYear() };
+}
+
+function updateDistributionYearOptions(defaultYear) {
+    const yearSelect = document.getElementById('distribution-year-filter');
+    if (!yearSelect) return;
+
+    const previousValue = yearSelect.value;
+    const years = new Set([defaultYear]);
+
+    transactions.forEach((t) => {
+        const date = new Date(t.date);
+        if (!isNaN(date.getTime())) {
+            years.add(date.getFullYear());
+        }
+    });
+
+    const sortedYears = Array.from(years).sort((a, b) => b - a);
+
+    yearSelect.innerHTML = '';
+    sortedYears.forEach((year) => {
+        const option = document.createElement('option');
+        option.value = year;
+        option.textContent = year;
+        yearSelect.appendChild(option);
+    });
+
+    if (previousValue && sortedYears.includes(parseInt(previousValue, 10))) {
+        yearSelect.value = previousValue;
+    } else if (sortedYears.includes(defaultYear)) {
+        yearSelect.value = String(defaultYear);
+    }
+}
+
+function getDistributionReferencePeriod() {
+    const monthSelect = document.getElementById('distribution-month-filter');
+    const yearSelect = document.getElementById('distribution-year-filter');
+
+    if (monthSelect && yearSelect && yearSelect.value !== '') {
+        return {
+            month: parseInt(monthSelect.value, 10),
+            year: parseInt(yearSelect.value, 10)
+        };
+    }
+
+    return getDashboardReferencePeriod();
+}
+
+function setupDistributionFilters() {
+    const monthSelect = document.getElementById('distribution-month-filter');
+    const yearSelect = document.getElementById('distribution-year-filter');
+    if (!monthSelect || !yearSelect) return;
+
+    const reference = getDashboardReferencePeriod();
+    monthSelect.value = String(reference.month);
+    updateDistributionYearOptions(reference.year);
+
+    monthSelect.addEventListener('change', () => {
+        updateChart();
+    });
+
+    yearSelect.addEventListener('change', () => {
+        updateChart();
+    });
+}
+
 // Função para atualizar o gráfico com base nos dados atuais
 function updateChart() {
+    const fallbackPeriod = getDashboardReferencePeriod();
+    updateDistributionYearOptions(fallbackPeriod.year);
+
+    const reference = getDistributionReferencePeriod();
     const categoryTotals = {};
+
     transactions.forEach(t => {
-        if (t.type === 'saida') {
+        const transactionDate = new Date(t.date);
+        const isSameMonth = transactionDate.getMonth() === reference.month;
+        const isSameYear = transactionDate.getFullYear() === reference.year;
+
+        if (t.type === 'saida' && isSameMonth && isSameYear) {
             categoryTotals[t.category] = (categoryTotals[t.category] || 0) + Math.abs(t.value);
         }
     });
@@ -268,6 +377,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initChart();
     loadPendingEdit();
     populateCategorySelect();
+    setupDistributionFilters();
     updateChart();
     updateTransactionsList();
     updateTotals();
