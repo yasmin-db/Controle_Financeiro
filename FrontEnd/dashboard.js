@@ -231,21 +231,65 @@ function getDistributionReferencePeriod() {
     return getDashboardReferencePeriod();
 }
 
+function getTransactionsForPeriod(period) {
+    return transactions.filter((transaction) => {
+        const transactionDate = new Date(transaction.date);
+        return transactionDate.getMonth() === period.month && transactionDate.getFullYear() === period.year;
+    });
+}
+
+function formatCurrencyBRL(value) {
+    return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+}
+
+function getMonthName(monthIndex) {
+    const monthNames = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+    return monthNames[monthIndex] || '';
+}
+
+function getPreviousPeriod(period) {
+    if (period.month === 0) {
+        return { month: 11, year: period.year - 1 };
+    }
+    return { month: period.month - 1, year: period.year };
+}
+
+function updateDatePickerLabel(period) {
+    const datePicker = document.querySelector('.date-picker');
+    if (!datePicker) return;
+    datePicker.textContent = `📅 ${getMonthName(period.month)} de ${period.year}`;
+}
+
+function refreshDashboardByPeriod() {
+    // Comentário: todos os quadros da home passam a respeitar o mesmo período mensal selecionado.
+    const reference = getDistributionReferencePeriod();
+    updateDatePickerLabel(reference);
+    updateChart();
+    updateTransactionsList(reference);
+    updateTotals(reference);
+}
+
+function shouldShowDivisionCard() {
+    return localStorage.getItem('sharedFinance') === 'true';
+}
+
 function setupDistributionFilters() {
     const monthSelect = document.getElementById('distribution-month-filter');
     const yearSelect = document.getElementById('distribution-year-filter');
     if (!monthSelect || !yearSelect) return;
 
-    const reference = getDashboardReferencePeriod();
+    // Comentário: ao abrir a página, o filtro nasce no mês atual do sistema.
+    const now = new Date();
+    const reference = { month: now.getMonth(), year: now.getFullYear() };
     monthSelect.value = String(reference.month);
     updateDistributionYearOptions(reference.year);
 
     monthSelect.addEventListener('change', () => {
-        updateChart();
+        refreshDashboardByPeriod();
     });
 
     yearSelect.addEventListener('change', () => {
-        updateChart();
+        refreshDashboardByPeriod();
     });
 }
 
@@ -278,12 +322,25 @@ function updateChart() {
 }
 
 // Função para atualizar a lista de últimos lançamentos
-function updateTransactionsList() {
+function updateTransactionsList(referencePeriod = getDistributionReferencePeriod()) {
     const list = document.querySelector('.transactions-list');
     list.innerHTML = '';
 
-    // Pegar os últimos 4 lançamentos
-    const recent = transactions.slice(-4).reverse();
+    // Comentário: a lista também é reiniciada por mês, mostrando apenas lançamentos do período selecionado.
+    const periodTransactions = getTransactionsForPeriod(referencePeriod)
+        .slice()
+        .sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    // Pegar os últimos 4 lançamentos do mês/ano atual do filtro.
+    const recent = periodTransactions.slice(0, 4);
+
+    if (recent.length === 0) {
+        const emptyItem = document.createElement('div');
+        emptyItem.className = 'transaction-item';
+        emptyItem.innerHTML = '<span class="trans-category">Sem lançamentos no período selecionado.</span>';
+        list.appendChild(emptyItem);
+        return;
+    }
 
     recent.forEach((t, index) => {
         const item = document.createElement('div');
@@ -310,29 +367,56 @@ function updateTransactionsList() {
 }
 
 // Função para calcular e atualizar os totais
-function updateTotals() {
+function updateTotals(referencePeriod = getDistributionReferencePeriod()) {
+    // Comentário: cards de totais e divisão usam só transações do mês/ano do filtro para evitar acumulado histórico.
     let totalIncome = 0;
     let totalExpenses = 0;
+    let entryCount = 0;
 
-    transactions.forEach(t => {
+    const currentPeriodTransactions = getTransactionsForPeriod(referencePeriod);
+
+    currentPeriodTransactions.forEach(t => {
         if (t.type === 'entrada') {
             totalIncome += t.value;
+            entryCount += 1;
         } else {
             totalExpenses += Math.abs(t.value);
         }
     });
 
     const surplus = totalIncome - totalExpenses;
+    const previousPeriod = getPreviousPeriod(referencePeriod);
+    const previousExpenses = getTransactionsForPeriod(previousPeriod)
+        .filter((t) => t.type === 'saida')
+        .reduce((sum, t) => sum + Math.abs(t.value), 0);
+
+    const expenseDifference = totalExpenses - previousExpenses;
+    const expenseSignal = expenseDifference >= 0 ? '↑' : '↓';
 
     // Atualizar cards
-    document.querySelector('.card:nth-child(1) .main-value').textContent = `R$ ${totalIncome.toFixed(2)}`;
-    document.querySelector('.card:nth-child(2) .main-value').textContent = `R$ ${totalExpenses.toFixed(2)}`;
-    document.querySelector('.card:nth-child(3) .main-value').textContent = `R$ ${surplus.toFixed(2)}`;
+    document.getElementById('income-main-value').textContent = formatCurrencyBRL(totalIncome);
+    document.getElementById('income-entry-count').textContent = String(entryCount);
+    document.getElementById('income-entry-average').textContent = entryCount > 0
+        ? formatCurrencyBRL(totalIncome / entryCount)
+        : formatCurrencyBRL(0);
 
-    // Atualizar progresso (simulação)
-    const progressPercent = Math.min((surplus / 2000) * 100, 100); // Meta de R$ 2000
-    document.querySelector('.progress-bar').style.width = `${progressPercent}%`;
-    document.querySelector('.card:nth-child(3) small').textContent = `Progresso da Meta: ${progressPercent.toFixed(0)}%`;
+    document.getElementById('expense-main-value').textContent = formatCurrencyBRL(totalExpenses);
+    document.getElementById('expense-compare-label').textContent = `${expenseSignal} ${formatCurrencyBRL(Math.abs(expenseDifference))} vs mês anterior`;
+
+    document.getElementById('surplus-main-value').textContent = formatCurrencyBRL(surplus);
+
+    const divisionCard = document.getElementById('division-card');
+    const showDivision = shouldShowDivisionCard();
+    if (divisionCard) {
+        divisionCard.style.display = showDivision ? '' : 'none';
+    }
+
+    if (showDivision) {
+        // Comentário: quando o cadastro indica controle em conjunto, a divisão usa uma regra simples de 50/50.
+        const halfSurplus = surplus / 2;
+        document.getElementById('split-gabriel').textContent = formatCurrencyBRL(halfSurplus);
+        document.getElementById('split-marianna').textContent = formatCurrencyBRL(halfSurplus);
+    }
 }
 
 // Função para popular o select de categorias
@@ -367,9 +451,7 @@ function addTransaction(name, category, value, type, date, paymentType) {
     transactions.push(transaction);
     saveTransactions();
 
-    updateChart();
-    updateTransactionsList();
-    updateTotals();
+    refreshDashboardByPeriod();
 }
 
 // Event listener para o formulário
@@ -378,9 +460,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadPendingEdit();
     populateCategorySelect();
     setupDistributionFilters();
-    updateChart();
-    updateTransactionsList();
-    updateTotals();
+    refreshDashboardByPeriod();
 
     // Event listener for category select
     document.getElementById('trans-category').addEventListener('change', function() {
@@ -443,9 +523,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 form.reset();
                 saveTransactions();
-                updateChart();
-                updateTransactionsList();
-                updateTotals();
+                refreshDashboardByPeriod();
 
                 if (cameFromMensal) {
                     window.location.href = 'mensal.html';

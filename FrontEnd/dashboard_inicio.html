@@ -16,7 +16,6 @@
                 <a href="dashboard_inicio.html" class="active">🏠 Início</a>
                 <a href="mensal.html">📅 Mensal</a>
                 <a href="anual.html">📈 Anual</a>
-                <a href="ajustes.html">⚙️ Ajustes</a>
             </nav>
         </aside>
 
@@ -25,9 +24,11 @@
                 <h1>Finanças Pessoais</h1>
                 <span>Visão Geral • Gabriel e Marianna</span>
             </div>
-            <div class="user-info">
+            <div class="user-info user-actions">
                 <div class="date-picker">📅 Janeiro de 2026</div>
                 <div class="status-badge">● Sincronizado</div>
+                <button type="button" class="topbar-action" data-theme-toggle aria-label="Alternar tema">🌙</button>
+                <button type="button" class="logout-button" data-logout>Sair</button>
             </div>
         </header>
 
@@ -41,11 +42,11 @@
                         <h3>RENDA TOTAL</h3>
                     </div>
                     <div class="card-body">
-                        <h2 class="main-value">R$ 10.070,00</h2>
+                        <h2 class="main-value" id="income-main-value">R$ 0,00</h2>
                     </div>
                     <div class="card-footer">
-                        <p>Gabriel: <span>R$ 5.315,00</span></p>
-                        <p>Marianna: <span>R$ 4.755,00</span></p>
+                        <p>Entradas no período: <span id="income-entry-count">0</span></p>
+                        <p>Média por entrada: <span id="income-entry-average">R$ 0,00</span></p>
                     </div>
                 </div>
 
@@ -55,38 +56,30 @@
                         <h3>CUSTOS TOTAIS</h3>
                     </div>
                     <div class="card-body">
-                        <h2 class="main-value text-red">R$ 8.652,27</h2>
-                        <small>↓ R$ 783,72 vs mês anterior</small>
-                    </div>
-                    <div class="card-footer">
-                        <p>Alimentação: <span>R$ 933,50</span></p>
-                        <p>Outros: <span>R$ 7.718,77</span></p>
+                        <h2 class="main-value text-red" id="expense-main-value">R$ 0,00</h2>
+                        <small id="expense-compare-label">R$ 0,00 vs mês anterior</small>
                     </div>
                 </div>
 
-                <div class="card shadow-blue">
+                <div class="card shadow-blue" id="surplus-card">
                     <div class="card-header">
                         <span class="card-icon">📈</span>
                         <h3>SOBRA DO MÊS</h3>
                     </div>
                     <div class="card-body">
-                        <h2 class="main-value">R$ 1.417,73</h2>
-                        <div class="progress-container">
-                            <div class="progress-bar" style="width: 71%;"></div>
-                        </div>
-                        <small>Progresso da Meta: 71%</small>
+                        <h2 class="main-value" id="surplus-main-value">R$ 0,00</h2>
                     </div>
                 </div>
 
-                <div class="card shadow-purple">
+                <div class="card shadow-purple" id="division-card">
                     <div class="card-header">
                         <span class="card-icon">👥</span>
                         <h3>DIVISÃO</h3>
                     </div>
                     <div class="card-body">
                         <div class="split-info">
-                            <p>Gabriel Sobra: <strong>R$ 646,33</strong></p>
-                            <p>Marianna Sobra: <strong>R$ 771,40</strong></p>
+                            <p>Gabriel Sobra: <strong id="split-gabriel">R$ 0,00</strong></p>
+                            <p>Marianna Sobra: <strong id="split-marianna">R$ 0,00</strong></p>
                         </div>
                     </div>
                 </div>
@@ -233,6 +226,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="theme.js"></script>
     <script src="dashboard.js"></script>
 </body>
 </html>

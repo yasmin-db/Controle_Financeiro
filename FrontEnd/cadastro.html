@@ -89,6 +89,14 @@
                     <input type="password" id="password" placeholder="Mínimo 6 caracteres" required>
                 </div>
 
+                <div class="input-group">
+                    <label for="shared-finance">Vocês vão controlar as finanças em conjunto?</label>
+                    <select id="shared-finance" required>
+                        <option value="false">Não</option>
+                        <option value="true">Sim</option>
+                    </select>
+                </div>
+
                 <button type="submit" class="btn-signup">Finalizar Cadastro</button>
             </form>
 
@@ -161,6 +169,15 @@
                 const rawValue = e.target.value.replace(/\D/g, '');
                 e.target.value = formatPhone(rawValue, mask);
             }
+        });
+
+        document.querySelector('.signup-form').addEventListener('submit', (event) => {
+            event.preventDefault();
+
+            const sharedFinance = document.getElementById('shared-finance').value;
+            localStorage.setItem('sharedFinance', sharedFinance);
+
+            window.location.href = 'login.html';
         });
     </script>
 

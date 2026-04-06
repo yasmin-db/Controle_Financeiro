@@ -121,6 +121,17 @@ select:focus {
     border-color: var(--input-focus-border);
 }
 
+.input-group select {
+    width: 100%;
+    padding: 10px;
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    color: var(--input-text);
+    outline: none;
+    transition: 0.2s;
+}
+
 /* Date Row */
 .date-row {
     display: flex;

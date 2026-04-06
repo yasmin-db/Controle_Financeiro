@@ -3,11 +3,25 @@
     --ui: #0d1117;
     --border: #30363d;
     --border-muted: #21262d;
+    --surface-hover: #21262d;
     --text: #ffffff;
     --text-muted: #8b949e;
     --primary: #58a6ff;
     --success: #3fb950;
     --danger: #f85149;
+}
+
+body.light-mode {
+    --surface: #f6f8fa;
+    --ui: #ffffff;
+    --border: #d0d7de;
+    --border-muted: #eaeef2;
+    --surface-hover: #eaeef2;
+    --text: #24292f;
+    --text-muted: #57606a;
+    --primary: #0969da;
+    --success: #1a7f37;
+    --danger: #cf222e;
 }
 
 * {
@@ -61,7 +75,7 @@ body {
 
 .menu a.active,
 .menu a:hover {
-    background-color: #21262d;
+    background-color: var(--surface-hover);
     color: var(--primary);
 }
 
@@ -222,7 +236,7 @@ small,
 }
 
 .transaction-item:hover {
-    background-color: #21262d;
+    background-color: var(--surface-hover);
 }
 
 .trans-info {
@@ -337,6 +351,42 @@ small,
     outline: none;
 }
 
+.user-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: auto;
+    flex-wrap: wrap;
+}
+
+.topbar-action,
+.logout-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    border-radius: 8px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    text-decoration: none;
+    transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.topbar-action:hover,
+.logout-button:hover {
+    background: var(--surface-hover);
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.logout-button {
+    font-weight: 600;
+}
+
 .chart-container {
     flex-grow: 1;
     display: flex;
@@ -432,5 +482,11 @@ small,
     .chart-filter-group,
     .chart-filter-group-year {
         min-width: 100%;
+    }
+
+    .user-actions {
+        width: 100%;
+        margin-left: 0;
+        justify-content: flex-start;
     }
 }

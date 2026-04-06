@@ -16,7 +16,6 @@
                 <a href="dashboard_inicio.html">🏠 Início</a>
                 <a href="mensal.html">📅 Mensal</a>
                 <a href="anual.html" class="active">📈 Anual</a>
-                <a href="ajustes.html">⚙️ Ajustes</a>
             </nav>
         </aside>
 
@@ -24,6 +23,10 @@
             <div class="page-title">
                 <h1>Performance Anual</h1>
                 <span id="annual-period-label">Consolidado 2026</span>
+            </div>
+            <div class="user-actions">
+                <button type="button" class="topbar-action" data-theme-toggle aria-label="Alternar tema">🌙</button>
+                <button type="button" class="logout-button" data-logout>Sair</button>
             </div>
         </header>
 
@@ -79,6 +82,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="theme.js"></script>
     <script>
         const monthLabels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
         const colorPalette = ['#2ea043', '#58a6ff', '#f85149', '#ffbd2e', '#8b949e', '#b392f0', '#38bdf8', '#f97316'];
