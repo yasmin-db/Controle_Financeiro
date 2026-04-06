@@ -1,0 +1,146 @@
+const monthLabels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+const colorPalette = ['#2ea043', '#58a6ff', '#f85149', '#ffbd2e', '#8b949e', '#b392f0', '#38bdf8', '#f97316'];
+
+function formatCurrency(value) {
+    return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+}
+
+function getTransactions() {
+    const raw = JSON.parse(localStorage.getItem('transactions')) || [];
+    return raw.filter((t) => t && t.date && !isNaN(new Date(t.date).getTime()));
+}
+
+function normalizeAmount(transaction) {
+    const value = Number(transaction.value) || 0;
+    return Math.abs(value);
+}
+
+function getChartColor(index) {
+    return colorPalette[index % colorPalette.length];
+}
+
+function buildYearlyData(targetYear) {
+    const monthlyIncome = Array(12).fill(0);
+    const monthlyExpenses = Array(12).fill(0);
+    const categoryMonthTotals = {};
+
+    const filtered = getTransactions().filter((transaction) => {
+        const date = new Date(transaction.date);
+        return date.getFullYear() === targetYear;
+    });
+
+    filtered.forEach((transaction) => {
+        const date = new Date(transaction.date);
+        const monthIndex = date.getMonth();
+        const amount = normalizeAmount(transaction);
+
+        if (transaction.type === 'entrada') {
+            monthlyIncome[monthIndex] += amount;
+            return;
+        }
+
+        monthlyExpenses[monthIndex] += amount;
+
+        const category = transaction.category || 'Sem categoria';
+        if (!categoryMonthTotals[category]) {
+            categoryMonthTotals[category] = Array(12).fill(0);
+        }
+        categoryMonthTotals[category][monthIndex] += amount;
+    });
+
+    return {
+        monthlyIncome,
+        monthlyExpenses,
+        categoryMonthTotals
+    };
+}
+
+function updateSummaryCards(monthlyIncome, monthlyExpenses) {
+    const totalIncome = monthlyIncome.reduce((sum, value) => sum + value, 0);
+    const totalExpenses = monthlyExpenses.reduce((sum, value) => sum + value, 0);
+    const totalSurplus = totalIncome - totalExpenses;
+
+    document.getElementById('annual-total-income').textContent = formatCurrency(totalIncome);
+    document.getElementById('annual-total-expense').textContent = formatCurrency(totalExpenses);
+
+    const surplusEl = document.getElementById('annual-total-surplus');
+    surplusEl.textContent = formatCurrency(totalSurplus);
+    surplusEl.classList.toggle('text-red', totalSurplus < 0);
+    surplusEl.classList.toggle('text-green', totalSurplus >= 0);
+}
+
+const ctxBarras = document.getElementById('chartBarrasAnual').getContext('2d');
+const chartBarrasAnual = new Chart(ctxBarras, {
+    type: 'bar',
+    data: {
+        labels: monthLabels,
+        datasets: [
+            {
+                label: 'Entradas',
+                data: Array(12).fill(0),
+                backgroundColor: '#3fb950',
+                borderRadius: 4
+            },
+            {
+                label: 'Saídas',
+                data: Array(12).fill(0),
+                backgroundColor: '#f85149',
+                borderRadius: 4
+            }
+        ]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: { grid: { color: '#30363d' }, ticks: { color: '#8b949e' } },
+            x: { grid: { display: false }, ticks: { color: '#8b949e' } }
+        },
+        plugins: { legend: { labels: { color: '#8b949e' } } }
+    }
+});
+
+const ctxLinhas = document.getElementById('chartLinhasCategorias').getContext('2d');
+const chartLinhasCategorias = new Chart(ctxLinhas, {
+    type: 'line',
+    data: {
+        labels: monthLabels,
+        datasets: []
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: { grid: { color: '#30363d' }, ticks: { color: '#8b949e' } },
+            x: { grid: { color: '#30363d' }, ticks: { color: '#8b949e' } }
+        },
+        plugins: { legend: { position: 'bottom', labels: { color: '#8b949e', padding: 20 } } }
+    }
+});
+
+function refreshAnnualDashboard() {
+    const nowYear = new Date().getFullYear();
+    const labelEl = document.getElementById('annual-period-label');
+    labelEl.textContent = `Consolidado ${nowYear}`;
+
+    const { monthlyIncome, monthlyExpenses, categoryMonthTotals } = buildYearlyData(nowYear);
+
+    chartBarrasAnual.data.datasets[0].data = monthlyIncome;
+    chartBarrasAnual.data.datasets[1].data = monthlyExpenses;
+    chartBarrasAnual.update();
+
+    const categories = Object.keys(categoryMonthTotals);
+    chartLinhasCategorias.data.datasets = categories.map((category, index) => ({
+        label: category,
+        data: categoryMonthTotals[category],
+        borderColor: getChartColor(index),
+        backgroundColor: getChartColor(index),
+        tension: 0.3,
+        fill: false
+    }));
+    chartLinhasCategorias.update();
+
+    updateSummaryCards(monthlyIncome, monthlyExpenses);
+}
+
+refreshAnnualDashboard();
