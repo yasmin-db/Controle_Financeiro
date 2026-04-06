@@ -297,6 +297,46 @@ small,
     margin-bottom: 20px;
 }
 
+.chart-filter-row {
+    display: flex;
+    gap: 12px;
+    margin-top: -6px;
+    margin-bottom: 14px;
+}
+
+.chart-filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 150px;
+}
+
+.chart-filter-group-year {
+    min-width: 110px;
+}
+
+.chart-filter-group label {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+}
+
+.chart-filter-group select {
+    width: 100%;
+    padding: 8px 10px;
+    background: var(--ui);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-size: 0.86rem;
+}
+
+.chart-filter-group select:focus {
+    border-color: var(--primary);
+    outline: none;
+}
+
 .chart-container {
     flex-grow: 1;
     display: flex;
@@ -382,4 +422,15 @@ small,
 
 .btn-add:hover {
     background: #2ea043;
+}
+
+@media (max-width: 768px) {
+    .chart-filter-row {
+        flex-direction: column;
+    }
+
+    .chart-filter-group,
+    .chart-filter-group-year {
+        min-width: 100%;
+    }
 }

@@ -23,7 +23,7 @@
         <header class="topbar">
             <div class="page-title">
                 <h1>Performance Anual</h1>
-                <span>Consolidado 2026</span>
+                <span id="annual-period-label">Consolidado 2026</span>
             </div>
         </header>
 
@@ -36,7 +36,7 @@
                         <h3>TOTAL GANHO NO ANO</h3>
                     </div>
                     <div class="card-body">
-                        <h2 class="main-value">R$ 120.840,00</h2>
+                        <h2 class="main-value" id="annual-total-income">R$ 0,00</h2>
                     </div>
                 </div>
 
@@ -46,7 +46,7 @@
                         <h3>TOTAL GASTO NO ANO</h3>
                     </div>
                     <div class="card-body">
-                        <h2 class="main-value text-red">R$ 103.827,24</h2>
+                        <h2 class="main-value text-red" id="annual-total-expense">R$ 0,00</h2>
                     </div>
                 </div>
 
@@ -56,7 +56,7 @@
                         <h3>PATRIMÔNIO ACUMULADO</h3>
                     </div>
                     <div class="card-body">
-                        <h2 class="main-value text-green">R$ 17.012,76</h2>
+                        <h2 class="main-value text-green" id="annual-total-surplus">R$ 0,00</h2>
                     </div>
                 </div>
 
@@ -80,22 +80,92 @@
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        // --- GRÁFICO DE BARRAS DUPLAS ---
+        const monthLabels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+        const colorPalette = ['#2ea043', '#58a6ff', '#f85149', '#ffbd2e', '#8b949e', '#b392f0', '#38bdf8', '#f97316'];
+
+        function formatCurrency(value) {
+            return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        }
+
+        function getTransactions() {
+            const raw = JSON.parse(localStorage.getItem('transactions')) || [];
+            return raw.filter((t) => t && t.date && !isNaN(new Date(t.date).getTime()));
+        }
+
+        function normalizeAmount(transaction) {
+            const value = Number(transaction.value) || 0;
+            return Math.abs(value);
+        }
+
+        function getChartColor(index) {
+            return colorPalette[index % colorPalette.length];
+        }
+
+        function buildYearlyData(targetYear) {
+            const monthlyIncome = Array(12).fill(0);
+            const monthlyExpenses = Array(12).fill(0);
+            const categoryMonthTotals = {};
+
+            const filtered = getTransactions().filter((transaction) => {
+                const date = new Date(transaction.date);
+                return date.getFullYear() === targetYear;
+            });
+
+            filtered.forEach((transaction) => {
+                const date = new Date(transaction.date);
+                const monthIndex = date.getMonth();
+                const amount = normalizeAmount(transaction);
+
+                if (transaction.type === 'entrada') {
+                    monthlyIncome[monthIndex] += amount;
+                    return;
+                }
+
+                monthlyExpenses[monthIndex] += amount;
+
+                const category = transaction.category || 'Sem categoria';
+                if (!categoryMonthTotals[category]) {
+                    categoryMonthTotals[category] = Array(12).fill(0);
+                }
+                categoryMonthTotals[category][monthIndex] += amount;
+            });
+
+            return {
+                monthlyIncome,
+                monthlyExpenses,
+                categoryMonthTotals
+            };
+        }
+
+        function updateSummaryCards(monthlyIncome, monthlyExpenses) {
+            const totalIncome = monthlyIncome.reduce((sum, value) => sum + value, 0);
+            const totalExpenses = monthlyExpenses.reduce((sum, value) => sum + value, 0);
+            const totalSurplus = totalIncome - totalExpenses;
+
+            document.getElementById('annual-total-income').textContent = formatCurrency(totalIncome);
+            document.getElementById('annual-total-expense').textContent = formatCurrency(totalExpenses);
+
+            const surplusEl = document.getElementById('annual-total-surplus');
+            surplusEl.textContent = formatCurrency(totalSurplus);
+            surplusEl.classList.toggle('text-red', totalSurplus < 0);
+            surplusEl.classList.toggle('text-green', totalSurplus >= 0);
+        }
+
         const ctxBarras = document.getElementById('chartBarrasAnual').getContext('2d');
-        new Chart(ctxBarras, {
+        const chartBarrasAnual = new Chart(ctxBarras, {
             type: 'bar',
             data: {
-                labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+                labels: monthLabels,
                 datasets: [
                     {
                         label: 'Entradas',
-                        data: [10000, 10500, 9800, 11000, 10200, 10000, 10000, 10000, 10000, 10000, 10000, 10840],
+                        data: Array(12).fill(0),
                         backgroundColor: '#3fb950',
                         borderRadius: 4
                     },
                     {
                         label: 'Saídas',
-                        data: [8500, 9000, 8200, 9500, 8800, 8000, 8100, 8300, 8500, 9000, 8700, 9227],
+                        data: Array(12).fill(0),
                         backgroundColor: '#f85149',
                         borderRadius: 4
                     }
@@ -112,18 +182,12 @@
             }
         });
 
-        // --- GRÁFICO DE LINHAS (CATEGORIAS) ---
         const ctxLinhas = document.getElementById('chartLinhasCategorias').getContext('2d');
-        new Chart(ctxLinhas, {
+        const chartLinhasCategorias = new Chart(ctxLinhas, {
             type: 'line',
             data: {
-                labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
-                datasets: [
-                    { label: 'Moradia', data: [1200, 1200, 1200, 1300, 1200, 1200, 1200, 1200, 1200, 1200, 1200, 1200], borderColor: '#2ea043', tension: 0.3 },
-                    { label: 'Alimentação', data: [900, 1100, 950, 1200, 850, 933, 1000, 900, 1050, 1100, 950, 980], borderColor: '#58a6ff', tension: 0.3 },
-                    { label: 'Transporte', data: [500, 650, 400, 800, 550, 620, 700, 500, 600, 750, 550, 600], borderColor: '#f85149', tension: 0.3 },
-                    { label: 'Lazer', data: [300, 800, 200, 500, 900, 250, 400, 150, 600, 300, 450, 700], borderColor: '#ffbd2e', tension: 0.3 }
-                ]
+                labels: monthLabels,
+                datasets: []
             },
             options: {
                 responsive: true,
@@ -135,6 +199,33 @@
                 plugins: { legend: { position: 'bottom', labels: { color: '#8b949e', padding: 20 } } }
             }
         });
+
+        function refreshAnnualDashboard() {
+            const nowYear = new Date().getFullYear();
+            const labelEl = document.getElementById('annual-period-label');
+            labelEl.textContent = `Consolidado ${nowYear}`;
+
+            const { monthlyIncome, monthlyExpenses, categoryMonthTotals } = buildYearlyData(nowYear);
+
+            chartBarrasAnual.data.datasets[0].data = monthlyIncome;
+            chartBarrasAnual.data.datasets[1].data = monthlyExpenses;
+            chartBarrasAnual.update();
+
+            const categories = Object.keys(categoryMonthTotals);
+            chartLinhasCategorias.data.datasets = categories.map((category, index) => ({
+                label: category,
+                data: categoryMonthTotals[category],
+                borderColor: getChartColor(index),
+                backgroundColor: getChartColor(index),
+                tension: 0.3,
+                fill: false
+            }));
+            chartLinhasCategorias.update();
+
+            updateSummaryCards(monthlyIncome, monthlyExpenses);
+        }
+
+        refreshAnnualDashboard();
     </script>
 </body>
 </html>
